@@ -1,4 +1,4 @@
-# LightCrafter
+# eMagin OLED
 
 A eMagin OLED add-on for [Stage](https://github.com/cafarm/Stage).
 
