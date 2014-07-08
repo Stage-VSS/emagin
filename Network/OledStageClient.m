@@ -3,9 +3,9 @@ classdef OledStageClient < StageClient
     methods
         
         % Gets the remote OLED brightness.
-        function brightness = getOledBrightness(obj)
+        function b = getOledBrightness(obj)
             obj.sendEvent(OledNetEvents.GET_OLED_BRIGHTNESS);
-            brightness = obj.getResponse();
+            b = obj.getResponse();
         end
         
         % Sets the remote OLED brightness.

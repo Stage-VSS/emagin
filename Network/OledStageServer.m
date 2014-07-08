@@ -1,30 +1,44 @@
 classdef OledStageServer < StageServer
     
     properties (Access = private)
+        microdisplayPort
         microdisplay
     end
     
     methods
         
-        function obj = OledStageServer(port)
+        function obj = OledStageServer(microdisplayPort, serverPort)
             if nargin < 1
-                port = 5678;
+                microdisplayPort = 'COM4';
             end
             
-            obj = obj@StageServer(port);
+            if nargin < 2
+                serverPort = 5678;
+            end
+            
+            obj = obj@StageServer(serverPort);
+            obj.microdisplayPort = microdisplayPort;
         end
         
     end
     
     methods (Access = protected)
         
-        function prepareToStart(obj, varargin)
-            prepareToStart@StageServer(obj, varargin{:});
+        function willStart(obj)
+            willStart@StageServer(obj);
             
-            obj.microdisplay = OledMicrodisplay();
+            monitor = obj.canvas.window.monitor;
+            
+            obj.microdisplay = OledMicrodisplay(monitor, obj.microdisplayPort);
             obj.microdisplay.connect();
             
             obj.microdisplay.setBrightness(OledBrightness.MIN);
+        end
+        
+        function didStop(obj)
+            didStop@StageServer(obj);
+            
+            obj.microdisplay.disconnect();
         end
         
         function onEventReceived(obj, src, data)

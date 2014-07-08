@@ -1,16 +1,18 @@
 classdef OledMicrodisplay < handle
     
     properties (Access = private)
+        monitor
         serialPort
     end
     
     methods
         
-        function obj = OledMicrodisplay(port)
-            if nargin < 1
+        function obj = OledMicrodisplay(monitor, port)
+            if nargin < 2
                 port = 'COM4';
             end
             
+            obj.monitor = monitor;
             obj.serialPort = serial(port);
         end
         
