@@ -3,6 +3,7 @@ classdef OledStageServer < StageServer
     properties (Access = private)
         microdisplayPort
         microdisplay
+        background
     end
     
     methods
@@ -32,7 +33,13 @@ classdef OledStageServer < StageServer
             obj.microdisplay = OledMicrodisplay(monitor, obj.microdisplayPort);
             obj.microdisplay.connect();
             
-            obj.microdisplay.setBrightness(OledBrightness.MIN);
+            obj.microdisplay.setBrightness(OledBrightness.MIN);            % Add the background to the presentation.
+            
+            obj.background = Rectangle();
+            obj.background.position = obj.canvas.size/2;
+            obj.background.size = obj.canvas.size;
+            obj.background.color = 0;
+            obj.background.init(obj.canvas);
         end
         
         function didStop(obj)
@@ -68,6 +75,21 @@ classdef OledStageServer < StageServer
             brightness = value{2};
             obj.microdisplay.setBrightness(brightness);
             client.send(NetEvents.OK);
+        end
+        
+        function onEventSetCanvasClearColor(obj, client, value)
+            color = value{2};
+            
+            obj.background.color = color;            
+            client.send(NetEvents.OK);
+        end
+        
+        function onEventPlay(obj, client, value)
+            % Add the background to the presentation.
+            presentation = value{2};
+            presentation.insertStimulus(1, obj.background);
+            
+            onEventPlay@StageServer(obj, client, value);
         end
         
     end
